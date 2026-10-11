@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Market | سوق السيارات</title>
+  <meta name="description" content="سوق سيارات بسيط لعرض السيارات والتواصل مع البائع مباشرة.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Auto Market">
+      <span class="brand-mark">🚗</span>
+      <span>Auto Market</span>
+    </a>
+    <div class="search-wrap">
+      <span>⌕</span>
+      <input id="search" type="search" placeholder="ابحث عن سيارة، موديل أو مدينة">
+    </div>
+    <button class="login-btn" id="loginBtn">تسجيل الدخول</button>
+  </header>
+
+  <main class="feed">
+    <section class="welcome post">
+      <div class="post-head">
+        <div class="avatar">A</div>
+        <div>
+          <strong>Auto Market</strong>
+          <small>سوق السيارات</small>
+        </div>
+      </div>
+      <div class="welcome-text">
+        <h1>سيارتك تبدأ من هنا 🚗</h1>
+        <p>شاهد السيارات المعروضة، اختر ما يناسبك وتواصل مع البائع مباشرة.</p>
+      </div>
+      <button class="primary" id="sellBtn">عايز تعرض سيارتك؟</button>
+    </section>
+
+    <div class="feed-title">
+      <h2>أحدث السيارات</h2>
+      <span id="count"></span>
+    </div>
+
+    <section id="cars" aria-live="polite"></section>
+    <p id="empty" class="empty" hidden>ما لقينا سيارات مطابقة للبحث.</p>
+  </main>
+
+  <footer>Auto Market · سوق السيارات</footer>
+  <script src="app.js"></script>
+</body>
+</html>
