@@ -2,50 +2,78 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auto Market | سوق السيارات</title>
-  <meta name="description" content="سوق سيارات بسيط لعرض السيارات والتواصل مع البائع مباشرة.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111111">
+  <title>الملهلب | سوق السيارات</title>
+  <meta name="description" content="الملهلب — سوق سوداني بسيط لعرض السيارات والبحث عنها والتواصل المباشر مع البائع.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#" aria-label="Auto Market">
-      <span class="brand-mark">🚗</span>
-      <span>Auto Market</span>
+    <a class="brand" href="#" aria-label="الملهلب">
+      <span class="brand-mark">م</span>
+      <span class="brand-copy"><strong>الملهلب</strong><small>سوق السيارات</small></span>
     </a>
-    <div class="search-wrap">
-      <span>⌕</span>
-      <input id="search" type="search" placeholder="ابحث عن سيارة، موديل أو مدينة">
-    </div>
-    <button class="login-btn" id="loginBtn">تسجيل الدخول</button>
+    <label class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="ابحث عن الماركة أو الموديل أو الولاية" aria-label="بحث"></label>
+    <div class="head-actions"><button class="icon-btn" id="themeBtn" title="تغيير الألوان" aria-label="تغيير الألوان">◐</button><button class="login-btn" id="loginBtn">دخول المدير</button></div>
   </header>
 
-  <main class="feed">
-    <section class="welcome post">
-      <div class="post-head">
-        <div class="avatar">A</div>
-        <div>
-          <strong>Auto Market</strong>
-          <small>سوق السيارات</small>
-        </div>
-      </div>
-      <div class="welcome-text">
-        <h1>سيارتك تبدأ من هنا 🚗</h1>
-        <p>شاهد السيارات المعروضة، اختر ما يناسبك وتواصل مع البائع مباشرة.</p>
-      </div>
-      <button class="primary" id="sellBtn">عايز تعرض سيارتك؟</button>
+  <main class="layout">
+    <aside class="side-panel glass">
+      <div class="section-kicker">ابحث بذكاء</div><h2>اعثر على سيارتك</h2>
+      <form id="filters" class="filters">
+        <label>نوع السيارة<input id="filterType" placeholder="مثال: سيدان، SUV"></label>
+        <label>الماركة<select id="filterBrand"><option value="">كل الماركات</option><option>Toyota</option><option>Hyundai</option><option>Kia</option><option>Nissan</option><option>Mercedes-Benz</option><option>BMW</option><option>Honda</option><option>Other</option></select></label>
+        <div class="two-col"><label>السعر من<input id="priceMin" type="number" min="0" placeholder="0"></label><label>إلى<input id="priceMax" type="number" min="0" placeholder="أي سعر"></label></div>
+        <label>الولاية<select id="filterState"><option value="">كل الولايات</option><option>الخرطوم</option><option>الجزيرة</option><option>نهر النيل</option><option>البحر الأحمر</option><option>كسلا</option><option>القضارف</option><option>سنار</option><option>النيل الأبيض</option><option>النيل الأزرق</option><option>الشمالية</option><option>شمال كردفان</option><option>جنوب كردفان</option><option>غرب كردفان</option><option>شمال دارفور</option><option>جنوب دارفور</option><option>غرب دارفور</option><option>وسط دارفور</option><option>شرق دارفور</option></select></label>
+        <div class="two-col"><label>من سنة<input id="yearMin" type="number" min="1950" max="2027" placeholder="2015"></label><label>إلى سنة<input id="yearMax" type="number" min="1950" max="2027" placeholder="2026"></label></div>
+        <label>اللون (اختياري)<input id="filterColor" placeholder="أبيض، أسود..."></label>
+        <label>المستند<select id="filterDocument"><option value="">الكل</option><option>وارد</option><option>شهادة بحث</option></select></label>
+        <label>ولاية الترخيص<input id="filterLicenseState" placeholder="ولاية الترخيص"></label>
+        <div class="filter-actions"><button class="primary" type="submit">عرض النتائج</button><button class="quiet-btn" type="reset" id="resetFilters">مسح</button></div>
+      </form>
+      <div class="about-mini"><span class="dot"></span><div><strong>عن الملهلب</strong><p>مكان يجمع عروض السيارات في السودان، بصور واضحة وبيانات مفهومة وتواصل مباشر مع البائع.</p></div></div>
+    </aside>
+
+    <section class="feed">
+      <section class="hero glass">
+        <div class="hero-content"><span class="pill">سوق السيارات السوداني</span><h1>سيارتك الجاية، <span>تلقاها هنا.</span></h1><p>تصفح العروض، قارن الأسعار، وتواصل مع البائع مباشرة عبر الهاتف أو واتساب.</p><button class="primary" id="sellBtn">＋ أضف إعلان سيارة</button></div>
+        <div class="hero-symbol" aria-hidden="true"><div class="symbol-ring">م</div><span>المـلهلب</span></div>
+      </section>
+      <div class="feed-title"><div><span class="section-kicker">مختارة بعناية</span><h2>أحدث عروض السيارات</h2></div><span id="count" class="count-chip"></span></div>
+      <div id="statusNote" class="notice" role="status">وضع المعاينة: الإعلانات التجريبية تظهر على هذا الجهاز فقط إلى حين ربط قاعدة البيانات.</div>
+      <section id="cars" aria-live="polite"></section>
+      <p id="empty" class="empty" hidden>ما لقينا سيارات مطابقة. جرّب تغيّر خيارات البحث.</p>
     </section>
-
-    <div class="feed-title">
-      <h2>أحدث السيارات</h2>
-      <span id="count"></span>
-    </div>
-
-    <section id="cars" aria-live="polite"></section>
-    <p id="empty" class="empty" hidden>ما لقينا سيارات مطابقة للبحث.</p>
   </main>
 
-  <footer>Auto Market · سوق السيارات</footer>
+  <dialog id="authDialog" class="dialog glass">
+    <form method="dialog" class="dialog-top"><div><span class="section-kicker">منطقة الإدارة</span><h2>دخول المدير</h2></div><button class="close-btn" aria-label="إغلاق">×</button></form>
+    <p class="dialog-hint">هذه النسخة لا تفعّل حسابات آمنة بعد. لا تدخل كلمة مرور حقيقية هنا.</p>
+    <button class="primary full" id="demoAdminBtn" type="button">فتح لوحة المعاينة على هذا الجهاز</button>
+  </dialog>
+
+  <dialog id="carDialog" class="dialog glass wide-dialog">
+    <form id="carForm">
+      <div class="dialog-top"><div><span class="section-kicker">إدارة الإعلان</span><h2 id="formTitle">إضافة سيارة</h2></div><button type="button" class="close-btn" id="closeCarDialog" aria-label="إغلاق">×</button></div>
+      <div class="form-grid">
+        <label>الماركة *<input name="brand" required placeholder="Toyota"></label><label>الموديل *<input name="model" required placeholder="Corolla"></label>
+        <label>سنة التصنيع *<input name="year" type="number" required min="1950" max="2027" placeholder="2020"></label><label>السعر بالجنيه السوداني *<input name="price" type="number" required min="0" placeholder="25000000"></label>
+        <label>الولاية *<select name="state" required><option value="">اختر الولاية</option><option>الخرطوم</option><option>الجزيرة</option><option>نهر النيل</option><option>البحر الأحمر</option><option>كسلا</option><option>القضارف</option><option>سنار</option><option>النيل الأبيض</option><option>النيل الأزرق</option><option>الشمالية</option><option>شمال كردفان</option><option>جنوب كردفان</option><option>غرب كردفان</option><option>شمال دارفور</option><option>جنوب دارفور</option><option>غرب دارفور</option><option>وسط دارفور</option><option>شرق دارفور</option></select></label>
+        <label>نوع السيارة<input name="type" placeholder="سيدان / دفع رباعي"></label><label>اللون<input name="color" placeholder="أبيض"></label><label>ناقل الحركة<select name="transmission"><option>أوتوماتيك</option><option>عادي</option></select></label><label>الوقود<select name="fuel"><option>بنزين</option><option>ديزل</option><option>كهرباء</option><option>هجين</option></select></label>
+        <label>المستند<select name="document"><option>وارد</option><option>شهادة بحث</option></select></label><label>ولاية الترخيص<input name="licenseState" placeholder="الخرطوم"></label>
+        <label>رقم الهاتف للتواصل *<input name="phone" required type="tel" placeholder="2499xxxxxxxx"></label><label>رابط صورة السيارة<input name="image" type="url" placeholder="https://..."></label>
+        <label class="full-field">رابط فيديو (اختياري)<input name="video" type="url" placeholder="رابط الفيديو"></label>
+        <label class="full-field">وصف إضافي<textarea name="extra" rows="3" placeholder="الحالة، الممشى، التأمين، تفاصيل المعاينة..."></textarea></label>
+      </div>
+      <label class="check-row"><input name="sold" type="checkbox"> تم بيع السيارة</label>
+      <div class="form-actions"><button class="primary" type="submit">حفظ الإعلان</button><button class="quiet-btn" type="button" id="cancelCar">إلغاء</button></div>
+      <p class="dialog-hint">تنبيه: الحفظ الحالي محلي على هذا الجهاز، وليس قاعدة بيانات مشتركة.</p>
+    </form>
+  </dialog>
+
+  <footer><strong>الملهلب</strong> · سوق السيارات السوداني <span>© <span id="yearNow"></span></span></footer>
+  <div id="toast" class="toast" role="status" hidden></div>
   <script src="app.js"></script>
 </body>
 </html>
