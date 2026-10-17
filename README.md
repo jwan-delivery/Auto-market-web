@@ -25,7 +25,7 @@
    يجب أن يغيّر الأمر صفاً واحداً. سجّل الخروج ثم الدخول من الموقع؛ ستظهر صلاحيات إدارة الإعلانات لحساب المدير. جميع الحسابات الجديدة تبدأ بصلاحية مستخدم عادي.
 
 ## النشر على Vercel
-الموقع ثابت (HTML/CSS/JavaScript) ولا يحتاج إلى أمر build. اربط مستودع [Auto-market-web](https://github.com/jwan-delivery/Auto-market-web) بمشروع Vercel على الفرع `main` ليُنشَر كل commit تلقائياً. لم أتمكن من رؤية أي مشروع Vercel ضمن الاتصال المتاح لهذه الجلسة؛ لذلك لا أستطيع تأكيد أن الربط أو النشر الإنتاجي اكتمل. بعد تحديث `supabase-config.js` تحقّق من آخر Deployment وأن الحالة Ready، ثم افتح رابط الموقع واختبر التسجيل والإعلانات والصور.
+الموقع ثابت (HTML/CSS/JavaScript) ولا يحتاج إلى أمر build. أنشأت مشروع Vercel باسم `almalhalab` وربطته بمستودع [Auto-market-web](https://github.com/jwan-delivery/Auto-market-web) على الفرع `main`. تأكدت أن Vercel بنى ونشر نسخة Production بنجاح (`READY`) وأن كل commit جديد على `main` ينشئ Deployment جديداً. رابط الموقع: https://almalhalab.vercel.app. صفحة التشغيل ما زالت تحتاج تفعيل Supabase من الخطوات أعلاه؛ المفتاح العام ما زال placeholder، كما يجب تشغيل `supabase-schema.sql` ومنح حسابك دور المدير قبل اختبار الإعلانات الحقيقية.
 
 ## الأمان والتكاليف
 - لا يوجد تسجيل دخول مدير تجريبي محلي.
