@@ -1,30 +1,557 @@
-const STORAGE_KEY = "almalhalab-preview-cars-v1";
-const ADMIN_KEY = "almalhalab-preview-admin-v1";
-const seedCars = [
- {id:"MLH-1001",brand:"Toyota",model:"Camry",year:2022,price:32000000,state:"الخرطوم",type:"سيدان",color:"أبيض",transmission:"أوتوماتيك",fuel:"بنزين",document:"وارد",licenseState:"الخرطوم",phone:"",image:"",video:"",extra:"مثال توضيحي فقط — استبدل هذا العرض ببيانات سيارة حقيقية.",sold:false},
- {id:"MLH-1002",brand:"Hyundai",model:"Elantra",year:2021,price:25500000,state:"الجزيرة",type:"سيدان",color:"فضي",transmission:"أوتوماتيك",fuel:"بنزين",document:"شهادة بحث",licenseState:"الجزيرة",phone:"",image:"",video:"",extra:"مثال توضيحي فقط — استبدل هذا العرض ببيانات سيارة حقيقية.",sold:false},
- {id:"MLH-1003",brand:"Kia",model:"Sportage",year:2023,price:38000000,state:"البحر الأحمر",type:"دفع رباعي",color:"أسود",transmission:"أوتوماتيك",fuel:"بنزين",document:"وارد",licenseState:"البحر الأحمر",phone:"",image:"",video:"",extra:"مثال توضيحي فقط — استبدل هذا العرض ببيانات سيارة حقيقية.",sold:false}
-];
+/* الملهلب — connected client for Supabase Auth, Database and Storage */
+const STORAGE_THEME_KEY = "almalhalab-theme";
 const $ = id => document.getElementById(id);
-let cars = loadCars(), adminMode = sessionStorage.getItem(ADMIN_KEY)==="yes", editingId = null;
-const authDialog=$("authDialog"), carDialog=$("carDialog"), carForm=$("carForm");
-function loadCars(){try{const v=localStorage.getItem(STORAGE_KEY);return v?JSON.parse(v):seedCars.map(c=>({...c}));}catch{return seedCars.map(c=>({...c}));}}
-function saveCars(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(cars));}catch{toast("تعذر الحفظ المحلي. قلّل حجم الصور أو استخدم روابط صور.");}}
-function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function money(v){return Number(v||0).toLocaleString("en-US")+" جنيه سوداني";}
-function description(c){return [c.brand+" "+c.model+" موديل "+c.year+".",c.type&&"النوع: "+c.type+".",c.color&&"اللون: "+c.color+".",c.transmission&&"القير: "+c.transmission+".",c.fuel&&"الوقود: "+c.fuel+".",c.document&&"المستند: "+c.document+".",c.extra].filter(Boolean).join("\n");}
-function whatsappNumber(phone){return String(phone||"").replace(/[^\d]/g,"").replace(/^00/,"");}
-function currentFilters(){return {q:$("search").value.trim().toLowerCase(),type:$("filterType").value.trim().toLowerCase(),brand:$("filterBrand").value.toLowerCase(),min:Number($("priceMin").value||0),max:Number($("priceMax").value||0),state:$("filterState").value,yearMin:Number($("yearMin").value||0),yearMax:Number($("yearMax").value||0),color:$("filterColor").value.trim().toLowerCase(),doc:$("filterDocument").value,license:$("filterLicenseState").value.trim().toLowerCase()};}
-function filteredCars(){const f=currentFilters();return cars.filter(c=>{const hay=[c.brand,c.model,c.year,c.state,c.type,c.color,c.document,c.licenseState,c.extra,c.id].join(" ").toLowerCase();return (!f.q||hay.includes(f.q))&&(!f.type||String(c.type||"").toLowerCase().includes(f.type))&&(!f.brand||String(c.brand||"").toLowerCase()===f.brand)&&(!f.min||Number(c.price)>=f.min)&&(!f.max||Number(c.price)<=f.max)&&(!f.state||c.state===f.state)&&(!f.yearMin||Number(c.year)>=f.yearMin)&&(!f.yearMax||Number(c.year)<=f.yearMax)&&(!f.color||String(c.color||"").toLowerCase().includes(f.color))&&(!f.doc||c.document===f.doc)&&(!f.license||String(c.licenseState||"").toLowerCase().includes(f.license));});}
-function render(){const list=filteredCars();$("count").textContent=list.length+" سيارة";$("empty").hidden=list.length>0;$("cars").innerHTML=list.map(c=>{const title=[c.brand,c.model,c.year].filter(Boolean).join(" ");const photo=c.image?'<img class="car-photo" loading="lazy" src="'+esc(c.image)+'" alt="'+esc(title)+'" onerror="this.style.display=\'none\'">':'<div class="photo-placeholder" role="img" aria-label="لا توجد صورة">🚘</div>';const phone=whatsappNumber(c.phone);const contact=phone?'<a class="action call" href="tel:'+esc(phone)+'">☎ اتصال</a><a class="action whatsapp" target="_blank" rel="noopener" href="https://wa.me/'+esc(phone)+'?text='+encodeURIComponent("السلام عليكم، أنا مهتم بالسيارة "+title+"، رقم العرض "+c.id+". هل ما زالت متاحة؟")+'">◉ واتساب</a>':'<button class="action" data-action="contact">☎ بيانات التواصل</button><button class="action" data-action="contact">◉ واتساب</button>';return '<article class="post"><div class="post-head"><div class="avatar">م</div><div><strong>الملهلب</strong><small>عرض '+esc(c.id)+' · '+esc(c.state)+'</small></div>'+(c.sold?'<span class="sold-tag">تم البيع</span>':'')+'</div>'+photo+'<div class="car-body"><h3 class="car-title">'+esc(title)+'</h3><p class="price">'+money(c.price)+' <small>• قابل للتفاوض حسب الاتفاق</small></p><div class="meta"><span>📍 '+esc(c.state)+'</span><span>📄 '+esc(c.document||"غير محدد")+'</span><span>🎨 '+esc(c.color||"غير محدد")+'</span><span>⚙ '+esc(c.transmission||"غير محدد")+'</span><span>⛽ '+esc(c.fuel||"غير محدد")+'</span></div><p class="desc">'+esc(description(c))+'</p>'+(c.video?'<p><a target="_blank" rel="noopener" href="'+esc(c.video)+'">▶ مشاهدة الفيديو</a></p>':'')+'<div class="offer-number">رقم العرض: '+esc(c.id)+'</div><div class="actions">'+contact+'<button class="action" data-action="share" data-id="'+esc(c.id)+'">↗ مشاركة</button></div></div>'+(adminMode?'<div class="admin-actions"><button data-action="edit" data-id="'+esc(c.id)+'">تعديل</button><button data-action="sold" data-id="'+esc(c.id)+'">'+(c.sold?"إلغاء حالة البيع":"تحديد تم البيع")+'</button><button data-action="delete" data-id="'+esc(c.id)+'">حذف</button></div>':'')+'</article>';}).join("");}
-function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.hidden=true,3200);}
-function openCar(car=null){if(!adminMode){authDialog.showModal();return;}editingId=car?.id||null;carForm.reset();$("formTitle").textContent=car?"تعديل "+car.id:"إضافة سيارة";if(car){for(const [k,v] of Object.entries(car)){const el=carForm.elements.namedItem(k);if(el&&el.type==="checkbox")el.checked=!!v;else if(el)el.value=v??"";}}carDialog.showModal();}
-$("search").addEventListener("input",render);$("filters").addEventListener("submit",e=>{e.preventDefault();render();});$("filters").addEventListener("reset",()=>setTimeout(render,0));$("resetFilters").addEventListener("click",()=>{$("search").value="";});
-$("themeBtn").addEventListener("click",()=>{const next=document.documentElement.dataset.theme==="yellow"?"":"yellow";if(next)document.documentElement.dataset.theme=next;else delete document.documentElement.dataset.theme;localStorage.setItem("almalhalab-theme",next);});
-try{const theme=localStorage.getItem("almalhalab-theme");if(theme)document.documentElement.dataset.theme=theme;}catch{}
-$("loginBtn").addEventListener("click",()=>adminMode?(sessionStorage.removeItem(ADMIN_KEY),adminMode=false,render(),$("loginBtn").textContent="دخول المدير",toast("تم إغلاق وضع المعاينة")):authDialog.showModal());
-$("sellBtn").addEventListener("click",()=>openCar());$("demoAdminBtn").addEventListener("click",()=>{adminMode=true;sessionStorage.setItem(ADMIN_KEY,"yes");authDialog.close();$("loginBtn").textContent="خروج من المعاينة";render();toast("وضع معاينة المدير مفعّل على هذا الجهاز فقط.");});
-$("closeCarDialog").addEventListener("click",()=>carDialog.close());$("cancelCar").addEventListener("click",()=>carDialog.close());
-carForm.addEventListener("submit",e=>{e.preventDefault();const fd=new FormData(carForm);const data=Object.fromEntries(fd.entries());data.year=Number(data.year);data.price=Number(data.price);data.sold=fd.has("sold");data.id=editingId||"MLH-"+String(Date.now()).slice(-7);if(!data.image)data.image="";if(editingId)cars=cars.map(c=>c.id===editingId?data:c);else cars.unshift(data);saveCars();carDialog.close();render();toast(editingId?"تم تحديث الإعلان محلياً":"تمت إضافة الإعلان محلياً");});
-document.addEventListener("click",async e=>{const b=e.target.closest("[data-action]");if(!b)return;const id=b.dataset.id;const c=cars.find(x=>x.id===id);switch(b.dataset.action){case"contact":toast("أضف رقم هاتف صحيحاً من نموذج الإعلان لتفعيل الاتصال وواتساب.");break;case"edit":openCar(c);break;case"sold":if(c){c.sold=!c.sold;saveCars();render();}break;case"delete":if(c&&confirm("هل تريد حذف العرض "+c.id+" من هذا الجهاز؟")){cars=cars.filter(x=>x.id!==id);saveCars();render();}break;case"share":if(c){const text="الملهلب — "+c.brand+" "+c.model+" "+c.year+"\nالسعر: "+money(c.price)+"\nالولاية: "+c.state+"\nرقم العرض: "+c.id;try{if(navigator.share)await navigator.share({title:"عرض "+c.id,text,url:location.href});else{await navigator.clipboard.writeText(text);toast("تم نسخ تفاصيل الإعلان");}}catch{toast(text);}}break;}});
-$("yearNow").textContent=new Date().getFullYear();if(adminMode)$("loginBtn").textContent="خروج من المعاينة";render();
+const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+}[char]));
+
+const cfg = window.SUPABASE_CONFIG || {};
+const keyIsReady = Boolean(cfg.anonKey && !String(cfg.anonKey).includes("PASTE_"));
+const db = keyIsReady && window.supabase
+  ? window.supabase.createClient(cfg.url, cfg.anonKey)
+  : null;
+
+let cars = [];
+let currentUser = null;
+let currentProfile = null;
+let userRole = "user";
+let editingId = null;
+let authMode = "signin";
+
+const authDialog = $("authDialog");
+const carDialog = $("carDialog");
+const carForm = $("carForm");
+
+function toast(message) {
+  const node = $("toast");
+  if (!node) return;
+  node.textContent = message;
+  node.hidden = false;
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => { node.hidden = true; }, 3800);
+}
+
+function setStatus(message) {
+  const node = $("statusNote");
+  if (node) node.textContent = message;
+}
+
+function isAdmin() {
+  return Boolean(currentUser && userRole === "admin");
+}
+
+function safeHttpUrl(value) {
+  try {
+    const parsed = new URL(String(value || ""));
+    return parsed.protocol === "https:" || parsed.protocol === "http:" ? parsed.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function whatsappNumber(phone) {
+  return String(phone || "").replace(/[^\d]/g, "").replace(/^00/, "");
+}
+
+function money(value) {
+  return Number(value || 0).toLocaleString("en-US") + " جنيه سوداني";
+}
+
+function description(car) {
+  return [
+    [car.brand, car.model].filter(Boolean).join(" ") + (car.year ? " موديل " + car.year + "." : "."),
+    car.type && "النوع: " + car.type + ".",
+    car.color && "اللون: " + car.color + ".",
+    car.transmission && "القير: " + car.transmission + ".",
+    car.fuel && "الوقود: " + car.fuel + ".",
+    car.document && "المستند: " + car.document + ".",
+    car.extra
+  ].filter(Boolean).join("\n");
+}
+
+function mapDatabaseCar(row) {
+  const imageUrls = Array.isArray(row.image_urls) ? row.image_urls : [];
+  return {
+    recordId: row.id,
+    id: row.offer_number,
+    ownerId: row.owner_id,
+    brand: row.brand,
+    model: row.model,
+    year: Number(row.year),
+    price: Number(row.price_sdg),
+    state: row.state,
+    type: row.car_type || "",
+    color: row.color || "",
+    transmission: row.transmission || "",
+    fuel: row.fuel || "",
+    document: row.document_type || "",
+    licenseState: row.license_state || "",
+    phone: row.phone || "",
+    imageUrls,
+    image: imageUrls[0] || "",
+    video: row.video_url || "",
+    extra: row.extra_description || "",
+    sold: Boolean(row.is_sold),
+    published: Boolean(row.is_published),
+    createdAt: row.created_at
+  };
+}
+
+function currentFilters() {
+  return {
+    q: ($("search")?.value || "").trim().toLowerCase(),
+    type: ($("filterType")?.value || "").trim().toLowerCase(),
+    brand: ($("filterBrand")?.value || "").toLowerCase(),
+    min: Number($("priceMin")?.value || 0),
+    max: Number($("priceMax")?.value || 0),
+    state: $("filterState")?.value || "",
+    yearMin: Number($("yearMin")?.value || 0),
+    yearMax: Number($("yearMax")?.value || 0),
+    color: ($("filterColor")?.value || "").trim().toLowerCase(),
+    doc: $("filterDocument")?.value || "",
+    license: ($("filterLicenseState")?.value || "").trim().toLowerCase()
+  };
+}
+
+function filteredCars() {
+  const filters = currentFilters();
+  return cars.filter(car => {
+    const haystack = [
+      car.brand, car.model, car.year, car.state, car.type, car.color,
+      car.document, car.licenseState, car.extra, car.id
+    ].join(" ").toLowerCase();
+    return (!filters.q || haystack.includes(filters.q)) &&
+      (!filters.type || String(car.type || "").toLowerCase().includes(filters.type)) &&
+      (!filters.brand || String(car.brand || "").toLowerCase() === filters.brand) &&
+      (!filters.min || Number(car.price) >= filters.min) &&
+      (!filters.max || Number(car.price) <= filters.max) &&
+      (!filters.state || car.state === filters.state) &&
+      (!filters.yearMin || Number(car.year) >= filters.yearMin) &&
+      (!filters.yearMax || Number(car.year) <= filters.yearMax) &&
+      (!filters.color || String(car.color || "").toLowerCase().includes(filters.color)) &&
+      (!filters.doc || car.document === filters.doc) &&
+      (!filters.license || String(car.licenseState || "").toLowerCase().includes(filters.license));
+  });
+}
+
+function render() {
+  const list = filteredCars();
+  $("count").textContent = list.length + " سيارة";
+  $("empty").hidden = list.length > 0;
+
+  $("cars").innerHTML = list.map(car => {
+    const title = [car.brand, car.model, car.year].filter(Boolean).join(" ");
+    const photoUrl = safeHttpUrl(car.image);
+    const videoUrl = safeHttpUrl(car.video);
+    const photo = photoUrl
+      ? '<img class="car-photo" loading="lazy" src="' + esc(photoUrl) + '" alt="' + esc(title) + '" onerror="this.style.display=\'none\'">'
+      : '<div class="photo-placeholder" role="img" aria-label="لا توجد صورة">🚘</div>';
+    const phone = whatsappNumber(car.phone);
+    const contact = phone
+      ? '<a class="action call" href="tel:' + esc(phone) + '">☎ اتصال</a>' +
+        '<a class="action whatsapp" target="_blank" rel="noopener noreferrer" href="https://wa.me/' + esc(phone) +
+        '?text=' + encodeURIComponent("السلام عليكم، أنا مهتم بالسيارة " + title + "، رقم العرض " + car.id + ". هل ما زالت متاحة؟") + '">◉ واتساب</a>'
+      : '<button class="action" data-action="contact">☎ بيانات التواصل</button><button class="action" data-action="contact">◉ واتساب</button>';
+
+    return '<article class="post">' +
+      '<div class="post-head"><div class="avatar">م</div><div><strong>الملهلب</strong><small>عرض ' +
+      esc(car.id) + ' · ' + esc(car.state) + '</small></div>' +
+      (car.sold ? '<span class="sold-tag">تم البيع</span>' : '') + '</div>' +
+      photo + '<div class="car-body"><h3 class="car-title">' + esc(title) + '</h3>' +
+      '<p class="price">' + money(car.price) + ' <small>• قابل للتفاوض حسب الاتفاق</small></p>' +
+      '<div class="meta"><span>📍 ' + esc(car.state) + '</span><span>📄 ' + esc(car.document || "غير محدد") +
+      '</span><span>🎨 ' + esc(car.color || "غير محدد") + '</span><span>⚙ ' + esc(car.transmission || "غير محدد") +
+      '</span><span>⛽ ' + esc(car.fuel || "غير محدد") + '</span><span>📋 ترخيص: ' +
+      esc(car.licenseState || "غير محدد") + '</span></div><p class="desc">' + esc(description(car)) + '</p>' +
+      (videoUrl ? '<p><a target="_blank" rel="noopener noreferrer" href="' + esc(videoUrl) + '">▶ مشاهدة الفيديو</a></p>' : '') +
+      '<div class="offer-number">رقم العرض: ' + esc(car.id) + '</div><div class="actions">' + contact +
+      '<button class="action" data-action="share" data-id="' + esc(car.id) + '">↗ مشاركة</button></div></div>' +
+      (isAdmin() ? '<div class="admin-actions"><button data-action="edit" data-id="' + esc(car.id) +
+        '">تعديل</button><button data-action="sold" data-id="' + esc(car.id) + '">' +
+        (car.sold ? "إلغاء حالة البيع" : "تحديد تم البيع") +
+        '</button><button data-action="delete" data-id="' + esc(car.id) + '">حذف</button></div>' : '') +
+      '</article>';
+  }).join("");
+}
+
+function updateAuthUI() {
+  $("loginBtn").textContent = currentUser ? "خروج" : "دخول / حساب";
+  $("sellBtn").textContent = isAdmin() ? "＋ أضف إعلان سيارة" : "＋ أضف إعلان سيارة";
+  if (isAdmin()) {
+    setStatus("متصل بقاعدة Supabase. دخلت بحساب المدير، ويمكنك إضافة الإعلانات وتعديلها وحذفها.");
+  } else if (currentUser) {
+    setStatus("أنت مسجل الدخول بحساب مستخدم. تصفح الإعلانات متاح، وإدارة الإعلانات مقصورة على المدير.");
+  }
+}
+
+async function loadProfile() {
+  currentProfile = null;
+  userRole = "user";
+  if (!db || !currentUser) return;
+
+  const { data, error } = await db
+    .from("profiles")
+    .select("id, display_name, role")
+    .eq("id", currentUser.id)
+    .maybeSingle();
+
+  if (error) {
+    console.warn("Profile lookup failed:", error.message);
+    return;
+  }
+
+  currentProfile = data || null;
+  userRole = data && data.role === "admin" ? "admin" : "user";
+}
+
+async function refreshCars() {
+  if (!db) {
+    cars = [];
+    render();
+    return;
+  }
+
+  const { data, error } = await db
+    .from("cars")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    cars = [];
+    render();
+    setStatus("تعذر قراءة جدول السيارات. تأكد من تشغيل ملف supabase-schema.sql في SQL Editor ومن إعداد المفتاح العام في supabase-config.js. التفاصيل: " + error.message);
+    return;
+  }
+
+  cars = (data || []).map(mapDatabaseCar);
+  render();
+
+  if (cars.length === 0) {
+    setStatus("الاتصال بقاعدة البيانات يعمل، لكن لا توجد إعلانات منشورة بعد. أضف حساب المدير واتبع تعليمات README.md.");
+  } else {
+    setStatus("متصل بقاعدة Supabase وتُعرض الإعلانات المشتركة للجميع.");
+  }
+  updateAuthUI();
+}
+
+async function applySession(session) {
+  currentUser = session && session.user ? session.user : null;
+  await loadProfile();
+  updateAuthUI();
+  await refreshCars();
+  render();
+}
+
+function showAuthDialog() {
+  authMode = "signin";
+  updateAuthMode();
+  authDialog.showModal();
+}
+
+function updateAuthMode() {
+  const signingUp = authMode === "signup";
+  $("authTitle").textContent = signingUp ? "إنشاء حساب مستخدم" : "دخول الحساب";
+  $("authSubmit").textContent = signingUp ? "إنشاء الحساب" : "دخول";
+  $("authToggleBtn").textContent = signingUp ? "لدي حساب بالفعل — دخول" : "إنشاء حساب جديد";
+  $("authHint").textContent = signingUp
+    ? "أنشئ حساباً عادياً باستخدام بريدك الإلكتروني وكلمة مرور من 8 أحرف على الأقل."
+    : "دخول آمن عبر Supabase. صلاحيات المدير تُحدد من قاعدة البيانات، وليست من هذا الجهاز.";
+  $("authPassword").minLength = 8;
+}
+
+function openCar(car) {
+  if (!db) {
+    toast("يجب إكمال إعداد مفتاح Supabase العام أولاً.");
+    return;
+  }
+  if (!currentUser) {
+    showAuthDialog();
+    toast("سجّل الدخول أولاً. إضافة الإعلانات متاحة لحساب المدير.");
+    return;
+  }
+  if (!isAdmin()) {
+    toast("حسابك مستخدم عادي. تواصل مع مدير الملهلب لنشر إعلان.");
+    return;
+  }
+
+  editingId = car ? car.id : null;
+  carForm.reset();
+  $("formTitle").textContent = car ? "تعديل " + car.id : "إضافة سيارة";
+  $("imageFile").value = "";
+  if (car) {
+    const values = {
+      brand: car.brand, model: car.model, year: car.year, price: car.price,
+      state: car.state, type: car.type, color: car.color,
+      transmission: car.transmission, fuel: car.fuel, document: car.document,
+      licenseState: car.licenseState, phone: car.phone, image: car.image,
+      video: car.video, extra: car.extra, sold: car.sold
+    };
+    for (const [name, value] of Object.entries(values)) {
+      const element = carForm.elements.namedItem(name);
+      if (!element) continue;
+      if (element.type === "checkbox") element.checked = Boolean(value);
+      else element.value = value ?? "";
+    }
+  }
+  carDialog.showModal();
+}
+
+async function uploadImage(file, offerNumber) {
+  if (!file) return null;
+  if (!file.type || !file.type.startsWith("image/")) throw new Error("الملف المختار ليس صورة.");
+  if (file.size > 8 * 1024 * 1024) throw new Error("حجم الصورة أكبر من 8 ميغابايت. اختر صورة أصغر.");
+
+  const safeName = String(file.name || "car-image").replace(/[^a-zA-Z0-9._-]/g, "-").slice(-90);
+  const path = currentUser.id + "/" + offerNumber + "-" + Date.now() + "-" + safeName;
+  const { error } = await db.storage.from("car-images").upload(path, file, {
+    cacheControl: "3600",
+    contentType: file.type,
+    upsert: false
+  });
+  if (error) throw error;
+
+  const { data } = db.storage.from("car-images").getPublicUrl(path);
+  return data.publicUrl;
+}
+
+async function saveCar(event) {
+  event.preventDefault();
+  if (!db || !currentUser || !isAdmin()) {
+    toast("يلزم حساب مدير صالح لحفظ الإعلانات.");
+    return;
+  }
+
+  const formData = new FormData(carForm);
+  const values = Object.fromEntries(formData.entries());
+  values.year = Number(values.year);
+  values.price = Number(values.price);
+  values.sold = formData.has("sold");
+
+  const existing = editingId ? cars.find(car => car.id === editingId) : null;
+  const offerNumber = editingId || "MLH-" + String(Date.now()).slice(-8);
+  let images = existing && Array.isArray(existing.imageUrls) ? [...existing.imageUrls] : [];
+  const typedImageUrl = safeHttpUrl(values.image);
+  const file = $("imageFile").files && $("imageFile").files[0];
+
+  try {
+    $("carForm").querySelector('button[type="submit"]').disabled = true;
+    let uploadedUrl = null;
+    if (file) uploadedUrl = await uploadImage(file, offerNumber);
+    if (uploadedUrl) images = [uploadedUrl, ...images.filter(url => url !== uploadedUrl)];
+    else if (typedImageUrl) images = [typedImageUrl, ...images.filter(url => url !== typedImageUrl)];
+
+    const record = {
+      offer_number: offerNumber,
+      brand: String(values.brand || "").trim(),
+      model: String(values.model || "").trim(),
+      year: values.year,
+      price_sdg: values.price,
+      state: values.state,
+      car_type: String(values.type || "").trim() || null,
+      color: String(values.color || "").trim() || null,
+      transmission: values.transmission || null,
+      fuel: values.fuel || null,
+      document_type: values.document || null,
+      license_state: String(values.licenseState || "").trim() || null,
+      phone: String(values.phone || "").trim(),
+      image_urls: images,
+      video_url: safeHttpUrl(values.video) || null,
+      extra_description: String(values.extra || "").trim() || null,
+      is_sold: values.sold,
+      is_published: true,
+      updated_at: new Date().toISOString()
+    };
+
+    let result;
+    if (existing) {
+      result = await db.from("cars").update(record).eq("id", existing.recordId);
+    } else {
+      record.owner_id = currentUser.id;
+      result = await db.from("cars").insert(record);
+    }
+    if (result.error) throw result.error;
+
+    carDialog.close();
+    await refreshCars();
+    toast(existing ? "تم تحديث الإعلان في قاعدة البيانات." : "تم حفظ الإعلان في قاعدة البيانات.");
+  } catch (error) {
+    console.error("Saving car failed:", error);
+    toast("تعذر حفظ الإعلان: " + (error.message || "خطأ غير معروف"));
+  } finally {
+    const submitButton = $("carForm").querySelector('button[type="submit"]');
+    if (submitButton) submitButton.disabled = false;
+  }
+}
+
+async function handleAuthSubmit(event) {
+  event.preventDefault();
+  if (!db) {
+    toast("أضف المفتاح العام في supabase-config.js أولاً.");
+    return;
+  }
+
+  const email = $("authEmail").value.trim();
+  const password = $("authPassword").value;
+  $("authSubmit").disabled = true;
+
+  try {
+    let result;
+    if (authMode === "signup") {
+      result = await db.auth.signUp({
+        email,
+        password,
+        options: { data: { display_name: email.split("@")[0] } }
+      });
+      if (result.error) throw result.error;
+      if (!result.data.session) {
+        authDialog.close();
+        toast("تم إنشاء الحساب. افحص بريدك الإلكتروني لتأكيده، ثم سجّل الدخول.");
+      } else {
+        authDialog.close();
+        await applySession(result.data.session);
+        toast("تم إنشاء الحساب وتسجيل الدخول.");
+      }
+    } else {
+      result = await db.auth.signInWithPassword({ email, password });
+      if (result.error) throw result.error;
+      authDialog.close();
+      await applySession(result.data.session);
+      toast(isAdmin() ? "مرحباً بك، تم التحقق من صلاحيات المدير." : "تم تسجيل الدخول بنجاح.");
+    }
+  } catch (error) {
+    console.error("Authentication failed:", error);
+    toast("تعذر إكمال العملية: " + (error.message || "تحقق من البريد وكلمة المرور."));
+  } finally {
+    $("authSubmit").disabled = false;
+  }
+}
+
+async function toggleSold(car) {
+  if (!db || !isAdmin() || !car) return;
+  const { error } = await db.from("cars")
+    .update({ is_sold: !car.sold, updated_at: new Date().toISOString() })
+    .eq("id", car.recordId);
+  if (error) {
+    toast("تعذر تغيير حالة البيع: " + error.message);
+    return;
+  }
+  await refreshCars();
+  toast(car.sold ? "تم إلغاء حالة البيع." : "تم تحديد السيارة كـ«تم البيع».");
+}
+
+async function deleteCar(car) {
+  if (!db || !isAdmin() || !car) return;
+  if (!confirm("هل تريد حذف العرض " + car.id + " من قاعدة البيانات المشتركة؟")) return;
+  const { error } = await db.from("cars").delete().eq("id", car.recordId);
+  if (error) {
+    toast("تعذر حذف الإعلان: " + error.message);
+    return;
+  }
+  await refreshCars();
+  toast("تم حذف الإعلان من قاعدة البيانات.");
+}
+
+$("search").addEventListener("input", render);
+$("filters").addEventListener("submit", event => { event.preventDefault(); render(); });
+$("filters").addEventListener("reset", () => setTimeout(render, 0));
+$("resetFilters").addEventListener("click", () => { $("search").value = ""; });
+
+$("themeBtn").addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "yellow" ? "" : "yellow";
+  if (next) document.documentElement.dataset.theme = next;
+  else delete document.documentElement.dataset.theme;
+  try { localStorage.setItem(STORAGE_THEME_KEY, next); } catch {}
+});
+
+try {
+  const theme = localStorage.getItem(STORAGE_THEME_KEY);
+  if (theme) document.documentElement.dataset.theme = theme;
+} catch {}
+
+$("loginBtn").addEventListener("click", async () => {
+  if (!db) {
+    toast("أكمل إعداد Supabase أولاً: المفتاح العام في supabase-config.js.");
+    return;
+  }
+  if (currentUser) {
+    const { error } = await db.auth.signOut();
+    if (error) toast("تعذر تسجيل الخروج: " + error.message);
+    else {
+      await applySession(null);
+      toast("تم تسجيل الخروج.");
+    }
+  } else {
+    showAuthDialog();
+  }
+});
+
+$("sellBtn").addEventListener("click", () => openCar(null));
+$("closeAuthDialog").addEventListener("click", () => authDialog.close());
+$("authToggleBtn").addEventListener("click", () => {
+  authMode = authMode === "signin" ? "signup" : "signin";
+  updateAuthMode();
+});
+$("authForm").addEventListener("submit", handleAuthSubmit);
+$("closeCarDialog").addEventListener("click", () => carDialog.close());
+$("cancelCar").addEventListener("click", () => carDialog.close());
+carForm.addEventListener("submit", saveCar);
+
+document.addEventListener("click", async event => {
+  const button = event.target.closest("[data-action]");
+  if (!button) return;
+  const car = cars.find(item => item.id === button.dataset.id);
+
+  switch (button.dataset.action) {
+    case "contact":
+      toast("هذا الإعلان لا يحتوي على رقم تواصل. تواصل مع إدارة الملهلب.");
+      break;
+    case "edit":
+      if (isAdmin()) openCar(car);
+      break;
+    case "sold":
+      await toggleSold(car);
+      break;
+    case "delete":
+      await deleteCar(car);
+      break;
+    case "share":
+      if (car) {
+        const shareText = "الملهلب — " + car.brand + " " + car.model + " " + car.year +
+          "\nالسعر: " + money(car.price) + "\nالولاية: " + car.state + "\nرقم العرض: " + car.id;
+        try {
+          if (navigator.share) await navigator.share({ title: "عرض " + car.id, text: shareText, url: location.href });
+          else if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(shareText);
+            toast("تم نسخ تفاصيل الإعلان.");
+          } else {
+            toast(shareText);
+          }
+        } catch (error) {
+          if (error && error.name !== "AbortError") toast("تعذرت مشاركة الإعلان.");
+        }
+      }
+      break;
+  }
+});
+
+$("yearNow").textContent = new Date().getFullYear();
+
+if (!db) {
+  setStatus("الموقع جاهز للربط، لكن المفتاح العام لـ Supabase لم يُضف بعد. اتبع خطوات README.md. لا تُدخل أي مفتاح service_role هنا.");
+  render();
+} else {
+  setStatus("جاري الاتصال بقاعدة البيانات المشتركة…");
+  db.auth.onAuthStateChange((_event, session) => {
+    setTimeout(() => { void applySession(session); }, 0);
+  });
+  db.auth.getSession().then(({ data, error }) => {
+    if (error) {
+      setStatus("تعذر التحقق من الجلسة: " + error.message);
+      return;
+    }
+    void applySession(data.session);
+  }).catch(error => {
+    setStatus("تعذر الاتصال بـ Supabase: " + error.message);
+  });
+}
+
