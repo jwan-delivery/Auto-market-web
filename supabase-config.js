@@ -3,5 +3,5 @@
 // database safety must come from Row Level Security, never from hiding this value.
 window.SUPABASE_CONFIG = {
   url: "https://khgufiaxxitapbhxydaf.supabase.co",
-  anonKey: "PASTE_SUPABASE_PUBLISHABLE_OR_ANON_KEY_HERE"
+  anonKey: "sb_publishable_MUn_QZZalVcYaP-OLbMrnQ__ld-meKM"
 };
