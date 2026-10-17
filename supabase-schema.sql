@@ -154,8 +154,8 @@ with check (user_id = auth.uid());
 
 grant select on public.cars to anon, authenticated;
 grant insert, update, delete on public.cars to authenticated;
+revoke all on public.profiles from anon, authenticated;
 grant select on public.profiles to authenticated;
-revoke insert, update, delete on public.profiles from anon, authenticated;
 grant select, insert, update, delete on public.saved_searches to authenticated;
 
 -- Publicly readable bucket: photo viewing works without login; only admins can upload/change/remove.
