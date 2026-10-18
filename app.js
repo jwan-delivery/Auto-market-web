@@ -664,7 +664,7 @@ $("filters").addEventListener("reset", () => setTimeout(render, 0));
 $("resetFilters").addEventListener("click", () => { $("search").value = ""; });
 
 $("themeBtn").addEventListener("click", () => {
-  const next = document.documentElement.dataset.theme === "yellow" ? "" : "yellow";
+  const next = document.documentElement.dataset.theme === "dark" ? "" : "dark";
   if (next) document.documentElement.dataset.theme = next;
   else delete document.documentElement.dataset.theme;
   try { localStorage.setItem(STORAGE_THEME_KEY, next); } catch {}
@@ -672,7 +672,8 @@ $("themeBtn").addEventListener("click", () => {
 
 try {
   const theme = localStorage.getItem(STORAGE_THEME_KEY);
-  if (theme) document.documentElement.dataset.theme = theme;
+  if (theme === "dark") document.documentElement.dataset.theme = "dark";
+  else delete document.documentElement.dataset.theme;
 } catch {}
 
 $("loginBtn").addEventListener("click", async () => {
