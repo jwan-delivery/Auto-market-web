@@ -570,6 +570,26 @@ async function saveCar(event) {
   }
 }
 
+async function signInWithGoogle() {
+  if (!db) {
+    toast("أكمل إعداد Supabase أولاً.");
+    return;
+  }
+  const button = $("googleSignInBtn");
+  button.disabled = true;
+  try {
+    const { error } = await db.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin }
+    });
+    if (error) throw error;
+  } catch (error) {
+    console.error("Google sign-in failed:", error);
+    toast("تعذر تسجيل الدخول عبر Google: " + (error.message || "حاول مرة أخرى."));
+    button.disabled = false;
+  }
+}
+
 async function handleAuthSubmit(event) {
   event.preventDefault();
   if (!db) {
@@ -682,6 +702,7 @@ $("authToggleBtn").addEventListener("click", () => {
   updateAuthMode();
 });
 $("authForm").addEventListener("submit", handleAuthSubmit);
+$("googleSignInBtn").addEventListener("click", signInWithGoogle);
 $("closeCarDialog").addEventListener("click", () => carDialog.close());
 $("cancelCar").addEventListener("click", () => carDialog.close());
 carForm.addEventListener("submit", saveCar);
