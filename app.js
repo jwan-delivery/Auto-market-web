@@ -187,7 +187,7 @@ function updateAuthUI() {
   $("sellBtn").hidden = !isAdmin();
   $("sellBtn").textContent = "＋ أضف إعلان سيارة";
   if (isAdmin()) {
-    setStatus("متصل بقاعدة Supabase. دخلت بحساب المدير، ويمكنك إضافة الإعلانات وتعديلها وحذفها.");
+    setStatus("");
   } else if (currentUser) {
     setStatus("");
   }
