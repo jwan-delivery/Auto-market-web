@@ -80,13 +80,13 @@
         <label>الولاية *<select name="state" required><option value="">اختر الولاية</option><option>الخرطوم</option><option>الجزيرة</option><option>نهر النيل</option><option>البحر الأحمر</option><option>كسلا</option><option>القضارف</option><option>سنار</option><option>النيل الأبيض</option><option>النيل الأزرق</option><option>الشمالية</option><option>شمال كردفان</option><option>جنوب كردفان</option><option>غرب كردفان</option><option>شمال دارفور</option><option>جنوب دارفور</option><option>غرب دارفور</option><option>وسط دارفور</option><option>شرق دارفور</option></select></label>
         <label>نوع السيارة<input name="type" placeholder="سيدان / دفع رباعي"></label><label>اللون<input name="color" placeholder="أبيض"></label><label>ناقل الحركة<select name="transmission"><option>أوتوماتيك</option><option>عادي</option></select></label><label>الوقود<select name="fuel"><option>بنزين</option><option>ديزل</option><option>كهرباء</option><option>هجين</option></select></label>
         <label>المستند<select name="document"><option>وارد</option><option>شهادة بحث</option></select></label><label>ولاية الترخيص<input name="licenseState" placeholder="الخرطوم"></label>
-        <label>رقم الهاتف للتواصل *<input name="phone" required type="tel" placeholder="2499xxxxxxxx"></label><label>رابط صورة السيارة (اختياري)<input name="image" type="url" placeholder="https://..."></label><label>رفع صورة من الجهاز (حتى 8 ميغابايت)<input id="imageFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif"></label>
+        <label>رقم الهاتف للتواصل *<input name="phone" required type="tel" placeholder="2499xxxxxxxx"></label><label>رابط صورة السيارة (اختياري)<input name="image" type="url" placeholder="https://..."></label><label class="full-field">رفع صور السيارة (يمكن اختيار عدة صور، كل صورة حتى 8 ميغابايت)<input id="imageFiles" type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif"></label>
         <label class="full-field">رابط فيديو (اختياري)<input name="video" type="url" placeholder="رابط الفيديو"></label>
         <label class="full-field">وصف إضافي<textarea name="extra" rows="3" placeholder="الحالة، الممشى، التأمين، تفاصيل المعاينة..."></textarea></label>
       </div>
       <label class="check-row"><input name="sold" type="checkbox"> تم بيع السيارة</label>
       <div class="form-actions"><button class="primary" type="submit">حفظ الإعلان</button><button class="quiet-btn" type="button" id="cancelCar">إلغاء</button></div>
-      <p class="dialog-hint">الحفظ يتم في قاعدة البيانات المشتركة. رفع الصورة متاح للمدير بعد إعداد مساحة car-images في Supabase.</p>
+      <p class="dialog-hint">الحفظ يتم في قاعدة البيانات المشتركة. يمكنك إضافة عدة صور للإعلان الواحد. رفع الصور يتطلب إعداد مساحة car-images في Supabase.</p>
     </form>
   </dialog>
 
