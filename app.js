@@ -187,7 +187,7 @@ function updateAuthUI() {
   if (isAdmin()) {
     setStatus("متصل بقاعدة Supabase. دخلت بحساب المدير، ويمكنك إضافة الإعلانات وتعديلها وحذفها.");
   } else if (currentUser) {
-    setStatus("أنت مسجل الدخول بحساب مستخدم. تصفح الإعلانات متاح، وإدارة الإعلانات مقصورة على المدير.");
+    setStatus("");
   }
 }
 
