@@ -24,3 +24,20 @@
 .hero-symbol{letter-spacing:.12em}
 .footer-logo{display:inline-block;flex:none;width:28px;height:28px;border-radius:8px;object-fit:cover;vertical-align:middle}
 @media(max-width:560px){.hero-logo{width:112px;height:112px;border-radius:32px}}
+
+
+/* Monochrome Facebook-inspired visual identity */
+:root{color-scheme:light;--bg:#f0f2f5;--surface:rgba(255,255,255,.94);--solid:#fff;--text:#050505;--muted:#65676b;--line:#dddfe2;--accent:#1877f2;--accent-ink:#fff;--shadow:0 1px 3px rgba(0,0,0,.12)}
+:root[data-theme="yellow"]{color-scheme:light;--bg:#f0f2f5;--surface:rgba(255,255,255,.94);--solid:#fff;--text:#050505;--muted:#65676b;--line:#dddfe2;--accent:#1877f2;--accent-ink:#fff}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#18191a;--surface:rgba(36,37,38,.96);--solid:#242526;--text:#e4e6eb;--muted:#b0b3b8;--line:#3e4042;--accent:#fff;--accent-ink:#18191a;--shadow:0 1px 3px rgba(0,0,0,.35)}
+body{background:var(--bg)}
+.brand-mark,.avatar,.symbol-ring{background:var(--text);color:var(--solid)}
+.hero h1 span{color:var(--text)}
+.primary{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+.primary:hover{filter:brightness(.94)}
+.filters input:focus,.filters select:focus,.form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus,.auth-fields input:focus{border-color:var(--text);box-shadow:0 0 0 3px color-mix(in srgb,var(--text) 12%,transparent)}
+.pill{background:color-mix(in srgb,var(--text) 8%,transparent)}
+.notice{background:color-mix(in srgb,var(--text) 4%,var(--solid));border-color:var(--line);color:var(--muted)}
+.photo-placeholder{background:var(--bg);color:var(--muted)}
+:root[data-theme="dark"] .glass{border-color:var(--line)}
+:root[data-theme="dark"] .sold-tag{background:#e4e6eb;color:#18191a}
