@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">شعار الملهلب</title>
+  <rect width="128" height="128" rx="30" fill="#111111"/>
+  <rect x="5" y="5" width="118" height="118" rx="26" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="2"/>
+  <path d="M24 73l7-20c2-6 7-10 14-10h39c7 0 12 4 15 10l7 20v14H22V73z" fill="#e2b928"/>
+  <path d="M39 55c1-3 3-5 7-5h37c4 0 6 2 8 5l5 12H34l5-12z" fill="#111111"/>
+  <path d="M27 72h74" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="39" cy="85" r="9" fill="#ffffff"/><circle cx="39" cy="85" r="4" fill="#111111"/>
+  <circle cx="89" cy="85" r="9" fill="#ffffff"/><circle cx="89" cy="85" r="4" fill="#111111"/>
+  <path d="M64 19v15" stroke="#e2b928" stroke-width="4" stroke-linecap="round"/>
+  <path d="M56 26h16" stroke="#e2b928" stroke-width="4" stroke-linecap="round"/>
+</svg>
