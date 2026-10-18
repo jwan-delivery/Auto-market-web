@@ -13,3 +13,6 @@
 .notify-cta-copy small{display:block;color:var(--muted);font-size:11px;line-height:1.8}
 .notify-cta-button{flex:none;max-width:250px;white-space:normal;line-height:1.6}
 @media(max-width:650px){.notify-cta{align-items:flex-start;flex-wrap:wrap;padding:18px;border-radius:20px;gap:12px}.notify-cta-icon{width:46px;height:46px;border-radius:15px}.notify-cta-copy{flex:1 1 calc(100% - 62px)}.notify-cta-copy h2{font-size:19px}.notify-cta-button{width:100%;max-width:none}}
+
+/* Google OAuth button */
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:11px;margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:var(--solid);color:var(--text);font:inherit;font-weight:800;cursor:pointer}.google-btn span{font-family:Arial,sans-serif;font-size:19px;font-weight:900;color:#4285f4}.google-btn:hover{background:var(--bg)}.google-btn:disabled{opacity:.6;cursor:wait}
