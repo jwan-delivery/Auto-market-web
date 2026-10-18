@@ -41,3 +41,6 @@ body{background:var(--bg)}
 .photo-placeholder{background:var(--bg);color:var(--muted)}
 :root[data-theme="dark"] .glass{border-color:var(--line)}
 :root[data-theme="dark"] .sold-tag{background:#e4e6eb;color:#18191a}
+
+/* Multiple photos per car listing */
+.car-gallery{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0;background:#e8e8e5;overscroll-behavior-inline:contain}.car-gallery .car-photo{flex:0 0 88%;width:88%;max-height:520px;aspect-ratio:16/10;object-fit:cover;scroll-snap-align:start;border-radius:0}.car-gallery .car-photo:first-child{margin-right:0}@media(max-width:560px){.car-gallery{gap:5px}.car-gallery .car-photo{flex-basis:88%;width:88%;aspect-ratio:4/3}}
