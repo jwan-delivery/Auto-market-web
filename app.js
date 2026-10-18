@@ -17,6 +17,10 @@ let currentProfile = null;
 let userRole = "user";
 let editingId = null;
 let authMode = "signin";
+let carAlertChannel = null;
+let carAlertPollTimer = null;
+let alertedCarIds = new Set();
+let latestAlertCreatedAt = "";
 
 const authDialog = $("authDialog");
 const carDialog = $("carDialog");
@@ -153,7 +157,7 @@ function render() {
         '?text=' + encodeURIComponent("السلام عليكم، أنا مهتم بالسيارة " + title + "، رقم العرض " + car.id + ". هل ما زالت متاحة؟") + '">◉ واتساب</a>'
       : '<button class="action" data-action="contact">☎ بيانات التواصل</button><button class="action" data-action="contact">◉ واتساب</button>';
 
-    return '<article class="post">' +
+    return '<article id="car-' + esc(car.id) + '" class="post">' +
       '<div class="post-head"><div class="avatar">م</div><div><strong>الملهلب</strong><small>عرض ' +
       esc(car.id) + ' · ' + esc(car.state) + '</small></div>' +
       (car.sold ? '<span class="sold-tag">تم البيع</span>' : '') + '</div>' +
@@ -176,12 +180,194 @@ function render() {
 
 function updateAuthUI() {
   $("loginBtn").textContent = currentUser ? "خروج" : "دخول / حساب";
+  updateNotifyUI();
   $("sellBtn").textContent = isAdmin() ? "＋ أضف إعلان سيارة" : "＋ أضف إعلان سيارة";
   if (isAdmin()) {
     setStatus("متصل بقاعدة Supabase. دخلت بحساب المدير، ويمكنك إضافة الإعلانات وتعديلها وحذفها.");
   } else if (currentUser) {
     setStatus("أنت مسجل الدخول بحساب مستخدم. تصفح الإعلانات متاح، وإدارة الإعلانات مقصورة على المدير.");
   }
+}
+
+function alertStorageKey() {
+  return currentUser ? "almalhalab-car-alerts:" + currentUser.id : "";
+}
+
+function readAlertPreferences() {
+  const key = alertStorageKey();
+  if (!key) return null;
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : null;
+  } catch {
+    return null;
+  }
+}
+
+function updateNotifyUI() {
+  const button = $("notifyBtn");
+  const status = $("notifyStatus");
+  if (!button || !status) return;
+  const enabled = Boolean(currentUser && readAlertPreferences() && "Notification" in window && Notification.permission === "granted");
+  button.textContent = enabled ? "✓ الإشعارات مفعّلة" : currentUser ? "فعّل إشعارات توفر السيارات" : "سجّل دخول وفعّل الإشعارات";
+  status.textContent = enabled
+    ? "تم حفظ خيارات بحثك. سننبهك عند ظهور عرض جديد مطابق ما دام الموقع مفتوحاً."
+    : "حدّد مواصفات السيارة التي تبحث عنها من الفلاتر، ثم سجّل الدخول وفعّل الإشعارات.";
+}
+
+function matchesAlertPreferences(car, filters) {
+  if (!car || car.sold || !car.published) return false;
+  const f = filters || {};
+  const haystack = [
+    car.brand, car.model, car.year, car.state, car.type, car.color,
+    car.document, car.licenseState, car.extra, car.id
+  ].join(" ").toLowerCase();
+  return (!f.q || haystack.includes(String(f.q).toLowerCase())) &&
+    (!f.type || String(car.type || "").toLowerCase().includes(String(f.type).toLowerCase())) &&
+    (!f.brand || String(car.brand || "").toLowerCase() === String(f.brand).toLowerCase()) &&
+    (!f.min || Number(car.price) >= Number(f.min)) &&
+    (!f.max || Number(car.price) <= Number(f.max)) &&
+    (!f.state || car.state === f.state) &&
+    (!f.yearMin || Number(car.year) >= Number(f.yearMin)) &&
+    (!f.yearMax || Number(car.year) <= Number(f.yearMax)) &&
+    (!f.color || String(car.color || "").toLowerCase().includes(String(f.color).toLowerCase())) &&
+    (!f.doc || car.document === f.doc) &&
+    (!f.license || String(car.licenseState || "").toLowerCase().includes(String(f.license).toLowerCase()));
+}
+
+function notifyForAvailableCar(car, filters) {
+  if (!currentUser || !matchesAlertPreferences(car, filters)) return;
+  const id = String(car.recordId || car.id || "");
+  if (!id || alertedCarIds.has(id)) return;
+  alertedCarIds.add(id);
+
+  if ("Notification" in window && Notification.permission === "granted") {
+    const title = [car.brand, car.model, car.year].filter(Boolean).join(" ");
+    try {
+      const notification = new Notification("الملهلب — لقينا عرض ممكن يناسبك 🚘", {
+        body: title + "\n" + money(car.price) + " · " + (car.state || "السودان"),
+        tag: "almalhalab-" + id,
+        renotify: false
+      });
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+        void refreshCars().finally(() => {
+          setTimeout(() => {
+            const cardId = String(car.id || "").replace(/[^a-zA-Z0-9_-]/g, "");
+            const card = $("car-" + cardId);
+            (card || $("cars"))?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 250);
+        });
+      };
+    } catch (error) {
+      console.warn("Browser notification could not be shown:", error);
+    }
+  }
+}
+
+function stopCarAlerts() {
+  if (carAlertChannel && db) {
+    void db.removeChannel(carAlertChannel);
+    carAlertChannel = null;
+  }
+  if (carAlertPollTimer) {
+    clearInterval(carAlertPollTimer);
+    carAlertPollTimer = null;
+  }
+}
+
+function startCarAlerts(filters) {
+  if (!db || !currentUser || !filters || !("Notification" in window) || Notification.permission !== "granted") return;
+  stopCarAlerts();
+  alertedCarIds = new Set(cars.map(car => String(car.recordId || car.id)));
+  latestAlertCreatedAt = cars.reduce((latest, car) => {
+    const time = car.createdAt ? new Date(car.createdAt).getTime() : 0;
+    return time > latest ? time : latest;
+  }, 0);
+  latestAlertCreatedAt = latestAlertCreatedAt ? new Date(latestAlertCreatedAt).toISOString() : "1970-01-01T00:00:00.000Z";
+
+  // Realtime gives fast alerts where the cars table is enabled for Supabase Realtime.
+  carAlertChannel = db.channel("almalhalab-car-alerts-" + currentUser.id)
+    .on("postgres_changes", { event: "*", schema: "public", table: "cars" }, payload => {
+      const row = payload && payload.new;
+      if (!row || !row.id) return;
+      const createdAt = row.created_at ? new Date(row.created_at).getTime() : 0;
+      if (createdAt > new Date(latestAlertCreatedAt).getTime()) latestAlertCreatedAt = new Date(createdAt).toISOString();
+      if (row.is_published && !row.is_sold) {
+        notifyForAvailableCar(mapDatabaseCar(row), filters);
+        void refreshCars();
+      }
+    })
+    .subscribe();
+
+  // Fallback when Realtime is unavailable; runs only while the page is open.
+  carAlertPollTimer = setInterval(async () => {
+    if (document.hidden || !db || !currentUser) return;
+    const { data, error } = await db.from("cars")
+      .select("*")
+      .gt("created_at", latestAlertCreatedAt)
+      .order("created_at", { ascending: true });
+    if (error || !Array.isArray(data) || !data.length) return;
+    for (const row of data) {
+      const time = row.created_at ? new Date(row.created_at).getTime() : 0;
+      if (time > new Date(latestAlertCreatedAt).getTime()) latestAlertCreatedAt = new Date(time).toISOString();
+      if (row.is_published && !row.is_sold) notifyForAvailableCar(mapDatabaseCar(row), filters);
+    }
+    void refreshCars();
+  }, 60000);
+
+  updateNotifyUI();
+}
+
+async function enableCarAlerts() {
+  if (!db) {
+    toast("أكمل إعداد Supabase أولاً حتى نقدر نحفظ حسابك وخيارات البحث.");
+    return;
+  }
+  if (!currentUser) {
+    showAuthDialog();
+    toast("سجّل الدخول أو أنشئ حساباً، وبعدها اضغط زر الإشعارات مرة ثانية.");
+    return;
+  }
+  if (!("Notification" in window)) {
+    toast("المتصفح لا يدعم الإشعارات. جرّب فتح الموقع في Chrome أو أضفه للشاشة الرئيسية.");
+    return;
+  }
+
+  let permission = Notification.permission;
+  if (permission === "default") {
+    try {
+      permission = await Notification.requestPermission();
+    } catch {
+      permission = "denied";
+    }
+  }
+  if (permission !== "granted") {
+    toast("لم يتم السماح بالإشعارات. فعّلها من إعدادات الموقع في المتصفح ثم حاول مرة أخرى.");
+    updateNotifyUI();
+    return;
+  }
+
+  const preferences = currentFilters();
+  try {
+    localStorage.setItem(alertStorageKey(), JSON.stringify(preferences));
+  } catch {
+    toast("تعذر حفظ خيارات البحث على هذا الجهاز.");
+    return;
+  }
+  startCarAlerts(preferences);
+  toast("تم تفعيل التنبيهات للعروض الجديدة المطابقة لبحثك.");
+}
+
+async function restoreCarAlerts() {
+  const preferences = readAlertPreferences();
+  if (preferences && "Notification" in window && Notification.permission === "granted") {
+    startCarAlerts(preferences);
+  } else {
+    stopCarAlerts();
+  }
+  updateNotifyUI();
 }
 
 async function loadProfile() {
@@ -240,6 +426,7 @@ async function applySession(session) {
   updateAuthUI();
   await refreshCars();
   render();
+  await restoreCarAlerts();
 }
 
 function showAuthDialog() {
@@ -474,6 +661,8 @@ $("loginBtn").addEventListener("click", async () => {
     return;
   }
   if (currentUser) {
+    stopCarAlerts();
+    try { localStorage.removeItem(alertStorageKey()); } catch {}
     const { error } = await db.auth.signOut();
     if (error) toast("تعذر تسجيل الخروج: " + error.message);
     else {
@@ -486,6 +675,7 @@ $("loginBtn").addEventListener("click", async () => {
 });
 
 $("sellBtn").addEventListener("click", () => openCar(null));
+$("notifyBtn").addEventListener("click", () => { void enableCarAlerts(); });
 $("closeAuthDialog").addEventListener("click", () => authDialog.close());
 $("authToggleBtn").addEventListener("click", () => {
   authMode = authMode === "signin" ? "signup" : "signin";
