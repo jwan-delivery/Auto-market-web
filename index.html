@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#111111">
+  <link rel="icon" type="image/svg+xml" href="assets/almalhalab-logo.svg">
   <title>الملهلب | سوق السيارات</title>
   <meta name="description" content="الملهلب — سوق سوداني بسيط لعرض السيارات والبحث عنها والتواصل المباشر مع البائع.">
   <link rel="stylesheet" href="styles.css">
@@ -11,7 +12,7 @@
 <body>
   <header class="topbar">
     <a class="brand" href="#" aria-label="الملهلب">
-      <span class="brand-mark">م</span>
+      <img class="brand-logo" src="assets/almalhalab-logo.svg" alt="" width="44" height="44">
       <span class="brand-copy"><strong>الملهلب</strong><small>سوق السيارات</small></span>
     </a>
     <label class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="ابحث عن الماركة أو الموديل أو الولاية" aria-label="بحث"></label>
@@ -38,7 +39,7 @@
     <section class="feed">
       <section class="hero glass">
         <div class="hero-content"><span class="pill">سوق السيارات السوداني</span><h1>سيارتك الجاية، <span>تلقاها هنا.</span></h1><p>تصفح العروض، قارن الأسعار، وتواصل مع البائع مباشرة عبر الهاتف أو واتساب.</p><button class="primary" id="sellBtn">＋ أضف إعلان سيارة</button></div>
-        <div class="hero-symbol" aria-hidden="true"><div class="symbol-ring">م</div><span>المـلهلب</span></div>
+        <div class="hero-symbol" aria-hidden="true"><img class="hero-logo" src="assets/almalhalab-logo.svg" alt="شعار الملهلب"><span>ALMULAHLIB</span></div>
       </section>
       <div class="feed-title"><div><span class="section-kicker">مختارة بعناية</span><h2>أحدث عروض السيارات</h2></div><span id="count" class="count-chip"></span></div>
       <div id="statusNote" class="notice" role="status">جاري الاتصال بقاعدة البيانات المشتركة…</div>
@@ -89,7 +90,7 @@
     </form>
   </dialog>
 
-  <footer><strong>الملهلب</strong> · سوق السيارات السوداني <span>© <span id="yearNow"></span></span></footer>
+  <footer><img class="footer-logo" src="assets/almalhalab-logo.svg" alt="" width="28" height="28"><strong>الملهلب</strong> · سوق السيارات السوداني <span>© <span id="yearNow"></span></span></footer>
   <div id="toast" class="toast" role="status" hidden></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
