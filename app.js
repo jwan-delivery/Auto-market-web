@@ -145,10 +145,12 @@ function render() {
 
   $("cars").innerHTML = list.map(car => {
     const title = [car.brand, car.model, car.year].filter(Boolean).join(" ");
-    const photoUrl = safeHttpUrl(car.image);
+    const imageUrls = [...new Set((Array.isArray(car.imageUrls) ? car.imageUrls : []).concat(car.image || []).map(safeHttpUrl).filter(Boolean))];
     const videoUrl = safeHttpUrl(car.video);
-    const photo = photoUrl
-      ? '<img class="car-photo" loading="lazy" src="' + esc(photoUrl) + '" alt="' + esc(title) + '" onerror="this.style.display=\'none\'">'
+    const photo = imageUrls.length
+      ? '<div class="car-gallery" aria-label="صور السيارة">' + imageUrls.map((url, index) =>
+          '<img class="car-photo" loading="lazy" src="' + esc(url) + '" alt="' + esc(title + ' - صورة ' + (index + 1)) + '" onerror="this.style.display=\'none\'">'
+        ).join('') + '</div>'
       : '<div class="photo-placeholder" role="img" aria-label="لا توجد صورة">🚘</div>';
     const phone = whatsappNumber(car.phone);
     const contact = phone
@@ -466,7 +468,7 @@ function openCar(car) {
   editingId = car ? car.id : null;
   carForm.reset();
   $("formTitle").textContent = car ? "تعديل " + car.id : "إضافة سيارة";
-  $("imageFile").value = "";
+  $("imageFiles").value = "";
   if (car) {
     const values = {
       brand: car.brand, model: car.model, year: car.year, price: car.price,
@@ -520,14 +522,14 @@ async function saveCar(event) {
   const offerNumber = editingId || "MLH-" + String(Date.now()).slice(-8);
   let images = existing && Array.isArray(existing.imageUrls) ? [...existing.imageUrls] : [];
   const typedImageUrl = safeHttpUrl(values.image);
-  const file = $("imageFile").files && $("imageFile").files[0];
+  const files = $("imageFiles").files ? Array.from($("imageFiles").files) : [];
 
   try {
     $("carForm").querySelector('button[type="submit"]').disabled = true;
-    let uploadedUrl = null;
-    if (file) uploadedUrl = await uploadImage(file, offerNumber);
-    if (uploadedUrl) images = [uploadedUrl, ...images.filter(url => url !== uploadedUrl)];
-    else if (typedImageUrl) images = [typedImageUrl, ...images.filter(url => url !== typedImageUrl)];
+    const uploadedUrls = [];
+    for (const file of files) uploadedUrls.push(await uploadImage(file, offerNumber));
+    if (uploadedUrls.length) images = [...uploadedUrls, ...images.filter(url => !uploadedUrls.includes(url))];
+    if (typedImageUrl) images = [typedImageUrl, ...images.filter(url => url !== typedImageUrl)];
 
     const record = {
       offer_number: offerNumber,
