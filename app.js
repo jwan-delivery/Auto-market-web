@@ -181,7 +181,9 @@ function render() {
 function updateAuthUI() {
   $("loginBtn").textContent = currentUser ? "خروج" : "دخول / حساب";
   updateNotifyUI();
-  $("sellBtn").textContent = isAdmin() ? "＋ أضف إعلان سيارة" : "＋ أضف إعلان سيارة";
+  // إظهار إضافة السيارات للمدير فقط، وإخفاؤها أثناء عدم تسجيل الدخول أو لحساب المستخدم العادي.
+  $("sellBtn").hidden = !isAdmin();
+  $("sellBtn").textContent = "＋ أضف إعلان سيارة";
   if (isAdmin()) {
     setStatus("متصل بقاعدة Supabase. دخلت بحساب المدير، ويمكنك إضافة الإعلانات وتعديلها وحذفها.");
   } else if (currentUser) {
