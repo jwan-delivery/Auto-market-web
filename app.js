@@ -160,8 +160,7 @@ function render() {
       : '<button class="action" data-action="contact">☎ بيانات التواصل</button><button class="action" data-action="contact">◉ واتساب</button>';
 
     return '<article id="car-' + esc(car.id) + '" class="post">' +
-      '<div class="post-head"><div class="avatar">م</div><div><strong>الملهلب</strong><small>عرض ' +
-      esc(car.id) + ' · ' + esc(car.state) + '</small></div>' +
+      '<div class="post-head"><div><strong>رقم العرض: ' + esc(car.id) + '</strong><small>📍 ' + esc(car.state) + '</small></div>' +
       (car.sold ? '<span class="sold-tag">تم البيع</span>' : '') + '</div>' +
       photo + '<div class="car-body"><h3 class="car-title">' + esc(title) + '</h3>' +
       '<p class="price">' + money(car.price) + ' <small>• قابل للتفاوض حسب الاتفاق</small></p>' +
