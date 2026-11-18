@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://almalhalab.vercel.app/sitemap.xml
