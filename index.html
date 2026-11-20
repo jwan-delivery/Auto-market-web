@@ -41,16 +41,72 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="#" aria-label="الملهلب">
-      <img class="brand-logo" src="assets/almalhalab-logo.svg" alt="" width="44" height="44">
+  <header class="topbar simple-topbar">
+    <a class="brand" href="/" aria-label="الملهلب - الرئيسية" data-go-home>
+      <img class="brand-logo" src="assets/almalhalab-logo.svg" alt="" width="52" height="52">
       <span class="brand-copy"><strong>الملهلب</strong><small>للعروض الملهلبة</small></span>
     </a>
-    <label class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="ابحث عن الماركة أو الموديل أو الولاية" aria-label="بحث"></label>
-    <div class="head-actions"><button class="icon-btn" id="themeBtn" title="تغيير الألوان" aria-label="تغيير الألوان">◐</button><button class="login-btn" id="loginBtn">دخول / حساب</button></div>
+    <label class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="ابحث عن السيارة أو الماركة" aria-label="بحث"></label>
+    <div class="head-actions"><button class="login-btn" id="loginBtn">دخول</button></div>
   </header>
+  <main id="homePage" class="home-page">
+    <section class="home-welcome">
+      <img class="home-welcome-logo" src="assets/almalhalab-logo.svg" alt="شعار الملهلب" width="76" height="76">
+      <div class="home-welcome-copy">
+        <span class="home-eyebrow">خدمات السيارات في السودان</span>
+        <h1>مع الملهلب <span>حتركب حتركب</span></h1>
+        <p>الملهلب للعروض الملهلبة</p>
+      </div>
+    </section>
 
-  <main class="layout">
+    <section class="service-list" aria-label="خدمات الملهلب">
+      <button type="button" class="service-card" data-open-market>
+        <span class="service-icon" aria-hidden="true">🚘</span>
+        <span class="service-card-copy"><strong>السيارات</strong><small>بيع وشراء ومشاهدة عروض السيارات</small></span>
+        <span class="service-arrow" aria-hidden="true">←</span>
+      </button>
+
+      <button type="button" class="service-card" data-open-service="insurance">
+        <span class="service-icon" aria-hidden="true">🛡️</span>
+        <span class="service-card-copy"><strong>أسعار التأمين</strong><small>اعرف أسعار التأمين ومعلوماته</small></span>
+        <span class="service-arrow" aria-hidden="true">←</span>
+      </button>
+
+      <button type="button" class="service-card" data-open-service="licensing">
+        <span class="service-icon" aria-hidden="true">📄</span>
+        <span class="service-card-copy"><strong>أسعار الترخيص</strong><small>اعرف رسوم الترخيص ومعلوماته</small></span>
+        <span class="service-arrow" aria-hidden="true">←</span>
+      </button>
+
+      <div class="service-card service-card-disabled" aria-disabled="true">
+        <span class="service-icon" aria-hidden="true">🚢</span>
+        <span class="service-card-copy"><strong>أسعار الجمارك</strong><small>نعمل على تجهيز هذه الخدمة</small></span>
+        <span class="coming-soon">قريباً</span>
+      </div>
+    </section>
+  </main>
+
+  <footer id="homeFooter" class="home-footer">
+    <img src="assets/almalhalab-logo.svg" alt="" width="30" height="30">
+    <strong>الملهلب</strong>
+    <span>مع الملهلب حتركب حتركب</span>
+    <small>© <span id="homeYear"></span></small>
+  </footer>
+
+  <main id="serviceInfoPage" class="service-info-page" hidden>
+    <button type="button" class="back-home-btn" data-go-home>← الرئيسية</button>
+    <section class="service-info-card">
+      <img src="assets/almalhalab-logo.svg" alt="" width="64" height="64">
+      <span class="home-eyebrow">خدمات الملهلب</span>
+      <h1 id="servicePageTitle"></h1>
+      <p id="servicePageMessage"></p>
+      <button type="button" class="primary" data-go-home>العودة للرئيسية</button>
+    </section>
+  </main>
+
+
+  <main id="marketPage" class="layout" hidden>
+    <button type="button" class="back-home-btn market-back-btn" data-go-home>← الرئيسية</button>
     <aside class="side-panel glass">
       <div class="section-kicker">ابحث بذكاء</div><h2>اعثر على سيارتك</h2>
       <form id="filters" class="filters">
@@ -139,11 +195,13 @@
     <button type="button" data-app-nav="account" aria-label="الحساب"><span>♙</span><small>الحساب</small></button>
   </nav>
 
-  <footer><img class="footer-logo" src="assets/almalhalab-logo.svg" alt="" width="28" height="28"><strong>الملهلب</strong> · سوق السيارات السوداني <span>© <span id="yearNow"></span></span></footer>
+  <footer id="marketFooter" class="market-footer"><img class="footer-logo" src="assets/almalhalab-logo.svg" alt="" width="28" height="28"><strong>الملهلب</strong> · سوق السيارات السوداني <span>© <span id="yearNow"></span></span></footer>
   <div id="toast" class="toast" role="status" hidden></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="app.js"></script>
   <script src="pwa.js"></script>
+  <script src="home.js"></script>
+  <script>document.getElementById("homeYear").textContent = new Date().getFullYear();</script>
 </body>
 </html>
