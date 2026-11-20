@@ -68,5 +68,4 @@ body{background:var(--bg)}
   .install-cta-copy h2{font-size:17px}
   .install-cta>button{grid-column:1/-1;width:100%}
 }
-@media(display-mode:standalone){.app-bottom-nav{display:grid}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.app-bottom-nav button{transition:none}}
