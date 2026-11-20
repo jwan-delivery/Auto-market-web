@@ -44,3 +44,29 @@ body{background:var(--bg)}
 
 /* Multiple photos per car listing */
 .car-gallery{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0;background:#e8e8e5;overscroll-behavior-inline:contain}.car-gallery .car-photo{flex:0 0 88%;width:88%;max-height:520px;aspect-ratio:16/10;object-fit:cover;scroll-snap-align:start;border-radius:0}.car-gallery .car-photo:first-child{margin-right:0}@media(max-width:560px){.car-gallery{gap:5px}.car-gallery .car-photo{flex-basis:88%;width:88%;aspect-ratio:4/3}}
+
+
+/* Almalhalab installable mobile app shell */
+.install-cta{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;margin:18px 0 22px;padding:18px 20px;border-radius:22px}
+.install-cta[hidden]{display:none}
+.install-cta-logo{width:58px;height:58px;border-radius:17px;box-shadow:0 5px 16px rgba(0,0,0,.12)}
+.install-cta-copy{min-width:0}
+.install-cta-copy h2{margin:4px 0 5px;font-size:18px}
+.install-cta-copy p{margin:0 0 4px;color:var(--muted);font-size:12px;line-height:1.8}
+.install-cta-copy small{color:var(--muted);font-size:10px;line-height:1.7}
+.install-cta>button{min-width:142px}
+.app-bottom-nav{display:none}
+@media(max-width:650px){
+  body{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+  .app-bottom-nav{position:fixed;z-index:50;inset:auto 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:7px 10px calc(7px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);box-shadow:0 -6px 24px rgba(0,0,0,.07)}
+  .app-bottom-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;border:0;border-radius:13px;background:transparent;color:var(--muted);font:inherit;cursor:pointer}
+  .app-bottom-nav button span{font-size:22px;line-height:1.1}
+  .app-bottom-nav button small{font-size:10px;font-weight:750}
+  .app-bottom-nav button[aria-current="page"]{background:color-mix(in srgb,var(--text) 7%,transparent);color:var(--text)}
+  .install-cta{grid-template-columns:auto minmax(0,1fr);gap:12px;padding:16px;border-radius:19px}
+  .install-cta-logo{width:48px;height:48px;border-radius:14px}
+  .install-cta-copy h2{font-size:17px}
+  .install-cta>button{grid-column:1/-1;width:100%}
+}
+@media(display-mode:standalone){.app-bottom-nav{display:grid}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.app-bottom-nav button{transition:none}}

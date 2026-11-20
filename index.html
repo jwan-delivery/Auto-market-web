@@ -31,6 +31,13 @@
     "inLanguage": "ar"
   }
   </script>
+    <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="الملهلب">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="application-name" content="الملهلب">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -114,10 +121,29 @@
     </form>
   </dialog>
 
+    <section class="install-cta glass" id="installCta" hidden aria-label="تثبيت تطبيق الملهلب">
+    <img class="install-cta-logo" src="/assets/almalhalab-logo.svg" alt="">
+    <div class="install-cta-copy">
+      <span class="section-kicker">تطبيق الملهلب</span>
+      <h2>خلّي الملهلب قريب منك</h2>
+      <p>ثبّت التطبيق على هاتفك وافتح سوق السيارات مباشرة من الشاشة الرئيسية.</p>
+      <small id="installHelp">تثبيت سريع، ويظل متصلاً بنفس حسابك وعروض الموقع.</small>
+    </div>
+    <button class="primary" id="installAppBtn" type="button">تثبيت التطبيق</button>
+  </section>
+
+  <nav class="app-bottom-nav" aria-label="التنقل الرئيسي">
+    <button type="button" data-app-nav="home" aria-label="الرئيسية"><span>⌂</span><small>الرئيسية</small></button>
+    <button type="button" data-app-nav="search" aria-label="البحث"><span>⌕</span><small>بحث</small></button>
+    <button type="button" data-app-nav="filters" aria-label="التصفية"><span>☷</span><small>تصفية</small></button>
+    <button type="button" data-app-nav="account" aria-label="الحساب"><span>♙</span><small>الحساب</small></button>
+  </nav>
+
   <footer><img class="footer-logo" src="assets/almalhalab-logo.svg" alt="" width="28" height="28"><strong>الملهلب</strong> · سوق السيارات السوداني <span>© <span id="yearNow"></span></span></footer>
   <div id="toast" class="toast" role="status" hidden></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="app.js"></script>
+  <script src="pwa.js"></script>
 </body>
 </html>
