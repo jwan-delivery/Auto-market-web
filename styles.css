@@ -69,3 +69,71 @@ body{background:var(--bg)}
   .install-cta>button{grid-column:1/-1;width:100%}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.app-bottom-nav button{transition:none}}
+
+
+/* Simple, phone-first home screen: four clear service choices */
+body:not(.market-active){background:#f4f4f1;color:#171717}
+body:not(.market-active) .topbar{position:relative;max-width:860px;margin:0 auto;padding:18px 22px;background:transparent;border:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;justify-content:space-between}
+body:not(.market-active) .brand-logo{width:52px;height:52px;border-radius:15px}
+body:not(.market-active) .brand-copy strong{font-size:21px}
+body:not(.market-active) .brand-copy small{font-size:12px}
+body:not(.market-active) .search-wrap{display:none}
+body:not(.market-active) .login-btn{background:#171717;color:#fff;padding:11px 20px;border-radius:13px;font-size:15px}
+.home-page{width:min(680px,calc(100% - 30px));margin:12px auto 24px}
+.home-welcome{display:flex;align-items:center;gap:17px;padding:20px 5px 25px}
+.home-welcome-logo{width:76px;height:76px;flex:none;border-radius:22px;box-shadow:0 8px 22px rgba(0,0,0,.12)}
+.home-eyebrow{display:block;color:#777;font-size:13px;font-weight:800;margin-bottom:6px}
+.home-welcome-copy h1{font-size:clamp(23px,5vw,32px);line-height:1.35;margin:0;font-weight:950;letter-spacing:-.04em}
+.home-welcome-copy h1 span{display:block;color:#9b7810}
+.home-welcome-copy p{margin:5px 0 0;color:#666;font-size:14px}
+.service-list{display:flex;flex-direction:column;gap:14px}
+.service-card{width:100%;min-height:112px;display:flex;align-items:center;gap:17px;padding:19px 20px;border:1px solid #e5e3dc;border-radius:21px;background:#fff;color:#171717;text-align:right;text-decoration:none;box-shadow:0 3px 12px rgba(0,0,0,.045);font:inherit;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.service-card:hover{transform:translateY(-2px);border-color:#d7bd61;box-shadow:0 8px 22px rgba(0,0,0,.08)}
+.service-icon{width:62px;height:62px;flex:none;display:grid;place-items:center;border-radius:18px;background:#f5f1df;font-size:31px}
+.service-card-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:6px}
+.service-card-copy strong{font-size:21px;font-weight:900;line-height:1.3}
+.service-card-copy small{font-size:13px;color:#777;line-height:1.6}
+.service-arrow{font-size:28px;color:#9b7810;font-weight:800}
+.service-card-disabled{cursor:default;background:#f0efeb;border-style:dashed;box-shadow:none}
+.service-card-disabled:hover{transform:none;box-shadow:none;border-color:#e5e3dc}
+.service-card-disabled .service-icon{background:#e7e6e1;filter:grayscale(1)}
+.coming-soon{flex:none;padding:7px 11px;border-radius:10px;background:#e7e5df;color:#666;font-size:12px;font-weight:900}
+.home-footer{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;width:min(680px,calc(100% - 30px));margin:28px auto 0;padding:18px 10px 30px;border-top:1px solid #e2e0d9;color:#777;font-size:12px}
+.home-footer img{border-radius:9px}
+.home-footer strong{color:#171717;font-size:14px}
+.home-footer small{flex-basis:100%;text-align:center;color:#999;margin-top:1px}
+.service-info-page{width:min(680px,calc(100% - 30px));margin:16px auto 35px}
+.service-info-card{padding:30px 24px;border:1px solid #e5e3dc;border-radius:23px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.045);text-align:center}
+.service-info-card img{display:block;margin:0 auto 17px;border-radius:17px}
+.service-info-card h1{font-size:27px;margin:8px 0 12px}
+.service-info-card p{font-size:16px;line-height:2;color:#666;margin:0 auto 22px;max-width:490px}
+.back-home-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;margin:0 0 14px;padding:9px 16px;border:1px solid #dedbd2;border-radius:12px;background:#fff;color:#171717;font:inherit;font-weight:800;cursor:pointer}
+.back-home-btn:hover{background:#f8f6ed;border-color:#d7bd61}
+.market-back-btn{grid-column:1/-1;justify-self:start}
+#homePage[hidden],#serviceInfoPage[hidden],#marketPage[hidden],#homeFooter[hidden]{display:none!important}
+body:not(.market-active) #marketFooter,body:not(.market-active) #installCta,body:not(.market-active) .app-bottom-nav{display:none!important}
+body.market-active .home-page,body.market-active #homeFooter,body.market-active #serviceInfoPage{display:none!important}
+body.market-active .search-wrap{display:flex}
+body.market-active .topbar{position:sticky}
+body.market-active .notice{display:none}
+body.market-active #installCta:not([hidden]){display:grid}
+body.market-active .app-bottom-nav{display:none!important}
+@media(max-width:560px){
+  body:not(.market-active) .topbar{padding:14px 16px}
+  .home-page{width:calc(100% - 26px);margin-top:5px}
+  .home-welcome{gap:13px;padding:13px 2px 21px}
+  .home-welcome-logo{width:64px;height:64px;border-radius:18px}
+  .home-welcome-copy h1{font-size:24px}
+  .home-welcome-copy p{font-size:12px}
+  .service-list{gap:12px}
+  .service-card{min-height:101px;padding:15px 14px;gap:12px;border-radius:18px}
+  .service-icon{width:53px;height:53px;border-radius:15px;font-size:27px}
+  .service-card-copy strong{font-size:19px}
+  .service-card-copy small{font-size:12px}
+  .coming-soon{font-size:11px;padding:6px 8px}
+  .home-footer{margin-top:19px}
+  .service-info-card{padding:25px 18px}
+  .service-info-card h1{font-size:24px}
+  .service-info-card p{font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){.service-card{transition:none}}
